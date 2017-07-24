@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { increment, doubleAsync } from '../modules/counter'
+import { increment, doubleAsync, cascadeAdd, cascadeMult } from '../modules/counter'
 
 /*  This is a container component. Notice it does not contain any JSX,
     nor does it import React. This component is **only** responsible for
@@ -14,12 +14,26 @@ import Counter from '../components/Counter'
 
 const mapDispatchToProps = {
   increment : () => increment(1),
-  doubleAsync
+  doubleAsync,
+  cascadeAdd,
+  cascadeMult,
 }
 
 const mapStateToProps = (state) => ({
-  counter : state.counter
+  counter : state.counter,
 })
+
+/* Use the merge props function to use dispatch mapped methods from
+   Your store slices */
+const mergeProps = (state, disp, ownProps) => {
+  let props = Object.assign({}, state, disp, ownProps)
+  props.cascade = () => {
+    disp.cascadeAdd(5)
+      .then(disp.cascadeMult(5))
+      .then(disp.cascadeMult(5))
+  }
+  return props
+}
 
 /*  Note: mapStateToProps is where you should use `reselect` to create selectors, ie:
 
@@ -35,4 +49,4 @@ const mapStateToProps = (state) => ({
     Selectors are composable. They can be used as input to other selectors.
     https://github.com/reactjs/reselect    */
 
-export default connect(mapStateToProps, mapDispatchToProps)(Counter)
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Counter)

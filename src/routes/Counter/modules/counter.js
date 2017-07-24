@@ -3,7 +3,8 @@
 // ------------------------------------
 export const COUNTER_INCREMENT = 'COUNTER_INCREMENT'
 export const COUNTER_DOUBLE_ASYNC = 'COUNTER_DOUBLE_ASYNC'
-
+export const CASCADE_ADD = 'CASCADE_ADD'
+export const CASCADE_MULT = 'CASCADE_MULT'
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -31,7 +32,30 @@ export const doubleAsync = () => {
     })
   }
 }
-
+export const cascadeAdd = (x) => {
+  return (dispatch, getState) => {
+    return new Promise((resolve, reject) => {
+      dispatch({
+        type : CASCADE_ADD,
+        payload : getState().counter,
+        x : x
+      })
+      resolve()
+    })
+  }
+}
+export const cascadeMult = (x) => {
+  return (dispatch, getState) => {
+    return new Promise((resolve, reject) => {
+      dispatch({
+        type : CASCADE_MULT,
+        payload : getState().counter,
+        x : x
+      })
+      resolve()
+    })
+  }
+}
 export const actions = {
   increment,
   doubleAsync
@@ -42,7 +66,9 @@ export const actions = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [COUNTER_INCREMENT]    : (state, action) => state + action.payload,
-  [COUNTER_DOUBLE_ASYNC] : (state, action) => state * 2
+  [COUNTER_DOUBLE_ASYNC] : (state, action) => state * 2,
+  [CASCADE_MULT] : (state, action) => action.payload * action.x,
+  [CASCADE_ADD] : (state, action) => action.payload + action.x
 }
 
 // ------------------------------------
